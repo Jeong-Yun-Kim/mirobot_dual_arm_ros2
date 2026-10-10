@@ -1,0 +1,56 @@
+# Original vision coordinates are retained; some lie outside driver limits. Calibrate before use.
+/**:
+  ros__parameters:
+    feedrate: 2000
+    workspace_x_min: 140.0
+    workspace_x_max: 290.0
+    workspace_y_min: -270.0
+    workspace_y_max: 270.0
+    workspace_z_min: 40.0
+    workspace_z_max: 300.0
+order_yolo_sequencer:
+  ros__parameters:
+    z_travel: 120.0
+    z_pick: 55.0
+    master_put_l:
+    - -20.0
+    - -250.0
+    - 60.0
+    master_put_r:
+    - 20.0
+    - -250.0
+    - 60.0
+    master_wait:
+    - 0.0
+    - -100.0
+    - 120.0
+    master_home:
+    - 0.0
+    - 0.0
+    - 120.0
+    slave_lid:
+    - 230.0
+    - 100.0
+    - 20.0
+    slave_box:
+    - 240.0
+    - 0.0
+    - 70.0
+    slave_conveyor:
+    - 0.0
+    - -200.0
+    - 60.0
+    slave_home:
+    - 0.0
+    - 0.0
+    - 120.0
+    pump_on_cmd: M3S1000
+    pump_off_cmd: M3S0
+    pump_on_delay: 0.15
+    pump_off_delay: 0.1
+mirobot_status_joint_sequential_replicator:
+  ros__parameters:
+    enable_round_trip: true
+    home_x: 200.0
+    home_y: 140.0
+    home_z: 100.0

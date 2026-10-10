@@ -1,0 +1,23 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Global Options:
+    Fixed Frame: world
+    Background Color: 48; 48; 48
+  Displays:
+    - Class: rviz_default_plugins/RobotModel
+      Name: Master
+      Enabled: true
+      Description Source: Topic
+      Description Topic:
+        Value: /mirobot1/robot_description
+      TF Prefix: mirobot1
+    - Class: rviz_default_plugins/RobotModel
+      Name: Slave
+      Enabled: true
+      Description Source: Topic
+      Description Topic:
+        Value: /mirobot2/robot_description
+      TF Prefix: mirobot2

@@ -1,0 +1,5 @@
+repositories:
+  mirobot_vision_ros2:
+    type: git
+    url: https://github.com/Jeong-Yun-Kim/mirobot_vision_ros2.git
+    version: a7e858b462a46d75601e16b350b9b4eb4594f578
