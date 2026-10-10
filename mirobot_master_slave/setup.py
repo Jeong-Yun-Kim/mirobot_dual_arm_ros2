@@ -1,5 +1,6 @@
-from setuptools import setup
 from glob import glob
+
+from setuptools import setup
 
 package_name = 'mirobot_master_slave'
 
@@ -11,10 +12,12 @@ setup(
         ('share/' + package_name + '/config', glob('config/*.yaml')),
         ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-
         # ✅ 실제 있는 파일만 나열
         ('share/' + package_name + '/launch', ['launch/mirobot_master_slave.launch.py']),
-        ('share/' + package_name + '/launch', ['launch/dual_mirobot_full_control.launch.py']),
+        (
+            'share/' + package_name + '/launch',
+            ['launch/dual_mirobot_full_control.launch.py'],
+        ),
         ('share/' + package_name + '/rviz', ['rviz/dual_mirobots.rviz']),
     ],
     install_requires=['setuptools'],
@@ -36,6 +39,4 @@ setup(
             'order_yolo_sequencer = mirobot_master_slave.order_yolo_sequencer:main',
         ],
     },
-
 )
-

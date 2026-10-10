@@ -62,7 +62,8 @@ ros2 launch mirobot_master_slave mirobot_master_slave.launch.py dry_run:=true mo
 ```
 
 실제 두 대의 장비에는 다음 명령을 사용하며, `mode`는 `replicate`, `sequential`, `roundtrip` 중 하나만 선택한다.
-기존 시간 초과 시 다음 단계로 진행하는 동작은 보존되어 있으므로 상태 수신과 대기 시간을 장비에서 확인한 뒤 사용한다.
+순차·왕복·비전 시퀀스는 각 이동의 새 busy→idle 상태를 확인하며, 시간 초과·상태 미수신·정지 시 실패로 종료하고 다음 이동을 발행하지 않는다.
+`dry_run`은 완료 피드백을 모사하지 않으므로 자동 시퀀스의 정상 완료 시험에는 사용하지 않는다.
 
 ```bash
 ros2 launch mirobot_master_slave mirobot_master_slave.launch.py   port1:=/dev/ttyUSB0 port2:=/dev/ttyUSB1 baud:=115200 mode:=roundtrip
@@ -78,6 +79,11 @@ ros2 run mirobot_master_slave master_cli
 
 선택 기능은 왕복 모드에서 다음과 같이 실행하며, `server_bridge`에는 외부 `/mr_move`·`/mr_estop` 발행자가 필요하다.
 Arduino 펌웨어와 외부 서버는 이 저장소에 포함하지 않는다.
+`/mr_estop`은 `ESTOP`과 `START`만 처리하며, 알 수 없는 입력은 무시한다.
+`START`는 정지 잠금을 해제하지만 취소된 작업을 자동 재실행하지 않으므로 새 주문을 전송해야 한다.
+`server_bridge`는 내부 `/sequence_request`·`/sequence_result`의 요청 ID와 성공 결과를 확인한 경우에만 기존 형식의 `/mr_done`을 발행한다.
+실패는 `/mr_failed`에 `id`, `ok: false`, `reason`으로 알리므로 외부 서버에서 해당 실패 토픽을 처리해야 한다.
+`/sequence_active`가 false인 사실만으로 성공을 판정하지 않으며 컨베이어도 실패 시 재가동하지 않는다.
 
 ```bash
 ros2 run mirobot_master_slave conveyor_controller --ros-args   -p port:=/dev/ttyACM0 -p baud:=115200 -p startup_state:=STOP
@@ -101,8 +107,10 @@ nano vision.local.yaml dual_arm.local.yaml
 ```
 
 실제 비전 모드에서는 준비한 설정으로 인식 발행기와 시퀀스를 별도 터미널에서 실행하며, `server_bridge`나 다른 복제 모드는 함께 실행하지 않는다.
-원본 좌표 중 X≤20 또는 Z=20인 위치는 기본 드라이버 범위 밖이므로 `dual_arm.yaml`의 좌표와 범위를 측정하여 일치시킨 뒤 사용한다.
-시퀀스는 드라이버에서 범위를 벗어난 좌표를 제한하므로 원본 예시 좌표만으로 정상 작업을 보장하지 않는다.
+원본 예시 좌표 중 X≤20 또는 Z=20인 위치는 기본 드라이버 범위 밖이므로 비전 모드의 launch 사전 검사에서 실행을 차단한다.
+측정한 위치를 `dual_arm.yaml`에 입력하며 범위를 임의로 넓혀 검사만 통과시키지 않는다.
+배열 길이·유한값·접근 높이·작업 범위를 검사하고, 주문 시작 전에 두 드라이버의 실제 범위도 조회하여 불일치나 응답 실패 시 중단한다.
+실시간 인식 좌표도 명령 발행 전에 검사하므로 범위 밖 좌표를 조용히 제한하여 계속 진행하지 않는다.
 
 ```bash
 ros2 launch vision_robot vision_cubes.launch.py params:="$HOME/mirobot_dual_arm_ws/vision.local.yaml"

@@ -32,6 +32,8 @@
   <test_depend>python3-pytest</test_depend>
 
   <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>rcl_interfaces</exec_depend>
   <export>
     <build_type>ament_python</build_type>
   </export>
